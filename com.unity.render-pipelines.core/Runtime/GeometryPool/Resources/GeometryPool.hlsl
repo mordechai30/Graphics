@@ -9,6 +9,8 @@ ByteAddressBuffer _GeoPoolGlobalSubMeshLookupBuffer;
 StructuredBuffer<GeoPoolSubMeshEntry> _GeoPoolGlobalSubMeshEntryBuffer;
 StructuredBuffer<GeoPoolMetadataEntry> _GeoPoolGlobalMetadataBuffer;
 StructuredBuffer<GeoPoolBatchTableEntry> _GeoPoolGlobalBatchTableBuffer;
+StructuredBuffer<GeoPoolMeshEntry> _GeoPoolMeshEntriesBuffer;
+
 ByteAddressBuffer _GeoPoolGlobalBatchInstanceBuffer;
 float4 _GeoPoolGlobalParams;
 
@@ -121,6 +123,26 @@ GeoPoolMetadataEntry GetMetadataEntry(int instanceID, int batchID)
     uint pair = _GeoPoolGlobalBatchInstanceBuffer.Load((globalInstanceIndex >> 1) << 2);
     uint metadataIdx = (globalInstanceIndex & 0x1) ? (pair >> 16) : (pair & 0xFF);
     return _GeoPoolGlobalMetadataBuffer[metadataIdx];
+}
+
+GeoPoolMeshEntry GetMeshEntry(uint geoHandle)
+{
+    return _GeoPoolMeshEntriesBuffer[geoHandle];
+}
+
+void PackMaterialKeyClusterCount(inout GeoPoolClusterEntry entry, int materialKey, int primitiveCount)
+{
+    entry.materialKey_PrimitiveCount = (materialKey & 0xFFFF) | ((primitiveCount & 0xFFFF) << 16);
+}
+
+int GetMaterialKey(GeoPoolClusterEntry entry)
+{
+    return entry.materialKey_PrimitiveCount & 0xFFFF;
+}
+
+int GetClusterPrimitiveCount(inout GeoPoolClusterEntry entry)
+{
+    return (entry.materialKey_PrimitiveCount >> 16) & 0xFFFF;
 }
 
 }
