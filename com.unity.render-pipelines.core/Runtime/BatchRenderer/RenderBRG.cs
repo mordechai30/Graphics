@@ -1228,17 +1228,19 @@ namespace UnityEngine.Rendering
 
     public delegate RenderBRGMaterialRenderInfo RenderBRGGetMaterialRenderInfoCallback(RenderBRGGetMaterialRenderInfoArgs arguments);
 
-    public struct RenderBRGBindingData
+    public struct VisibilityBRGBindingData
     {
         public GeometryPool globalGeometryPool;
+        public GraphicsBuffer visibleClustersBuffer;
 
         public bool valid => globalGeometryPool != null;
 
-        public static RenderBRGBindingData NewDefault()
+        public static VisibilityBRGBindingData NewDefault()
         {
-            return new RenderBRGBindingData()
+            return new VisibilityBRGBindingData()
             {
-                globalGeometryPool = null
+                globalGeometryPool = null,
+                visibleClustersBuffer = null
             };
         }
     }
@@ -1274,11 +1276,12 @@ namespace UnityEngine.Rendering
         private static uint s_VisibilityBRGRef = 0;
         private static GPUVisibilityBRG s_VisibilityBRG;
 
-        public static RenderBRGBindingData GetRenderBRGMaterialBindingData()
+        public static VisibilityBRGBindingData GetVisiblityBindingData()
         {
-            return new RenderBRGBindingData()
+            return new VisibilityBRGBindingData()
             {
-                globalGeometryPool = s_VisibilityBRG == null ? null : s_VisibilityBRG.geometryPool
+                globalGeometryPool = s_VisibilityBRG == null ? null : s_VisibilityBRG.geometryPool,
+                visibleClustersBuffer = s_VisibilityBRG == null ? null : s_VisibilityBRG.visibleClustersBuffer
             };
         }
 
